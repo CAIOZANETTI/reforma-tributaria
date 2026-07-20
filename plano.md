@@ -343,6 +343,7 @@ reforma-tributaria/
 │   └── workflows/
 │       └── testes.yml            # CI: pytest + validação dos dados em todo PR
 ├── docs/
+│   ├── roteiro_implementacao.md  # fases de implementação com portões de teste
 │   ├── interpretacoes/           # um .md por interpretação registrada
 │   └── fontes/                   # PDFs oficiais (LC 214, LC 227, Decreto 12.955)
 ├── dados/
@@ -615,6 +616,8 @@ Toda memória de cálculo grava os três: versão do código, versão dos dados,
 7. `nucleo/memoria.py`, `nucleo/relatorio.py` (HTML autocontido + Excel) e tela 8 — o artefato do art. 374 e o entregável ao usuário final.
 8. Telas 2, 4, 6 e 7.
 9. Segundo módulo de negócio (`locacao_imoveis.py`), para validar que a estrutura de arquivo único por regime se sustenta.
+
+> O detalhamento executável desta ordem — o que cada fase constrói, os testes de cada iteração e o critério de avanço — está em `docs/roteiro_implementacao.md`. Regra geral: nenhuma fase começa com a anterior vermelha; a partir da fase do app, todo PR mantém o sistema executável.
 
 ---
 
