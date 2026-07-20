@@ -2,7 +2,7 @@
 
 Este arquivo define o padrão obrigatório de código e dados deste repositório. Vale para qualquer pessoa que contribua e para qualquer IA (Claude Code ou outra) que gere código aqui.
 
-A fonte normativa (legislação, arquitetura, backlog de pesquisa) é `reforma_tributaria_construcao_civil.md` (futuramente `docs/legislacao.md`). Este arquivo aqui **não repete** aquele conteúdo — só fixa o padrão técnico que todo código e todo dado precisam seguir.
+A fonte normativa (legislação, arquitetura, backlog de pesquisa) é `plano.md`, na raiz do repositório. Este arquivo aqui **não repete** aquele conteúdo — só fixa o padrão técnico que todo código e todo dado precisam seguir.
 
 ---
 
@@ -23,7 +23,8 @@ Não negociáveis. Um PR que quebre qualquer item abaixo não deve ser aceito.
 - **Nomes em português.** Funções, variáveis, colunas de dados, chaves de JSON — tudo em português. Nada de `price`, `tax_rate`, `is_valid`. Use `preco`, `aliquota`, `valido`.
 - **Proibido `dataclass` e classes de domínio.** Funções puras, curtas, sem estado. Estruturas de dados são `dict`, `list`, `float`, `str` e `DataFrame` (quando for tabela).
 - **Sem banco de dados.** Nenhum SQL, nenhum ORM, nenhum SQLite/Postgres/etc. Persistência é **CSV** (dado tabular) e **JSON** (configuração e estrutura aninhada).
-- **Sem JavaScript e sem qualquer stack de front-end fora do Streamlit.** Nenhum React, Vue, HTML solto, API separada.
+- **Sem JavaScript e sem qualquer stack de front-end fora do Streamlit.** Nenhum React, Vue, API separada, nenhuma tela escrita em HTML/JS.
+  - **Única exceção — relatório final:** o sistema pode **exportar** relatório em HTML autocontido (com JavaScript embutido, ex.: gráficos Plotly) e em Excel, gerados por Python (pandas/Plotly). JavaScript aqui é **saída** do sistema, nunca código-fonte do sistema: ninguém escreve `.js` no repositório, ninguém edita HTML à mão.
 - **Nenhum parâmetro numérico tributário fica hardcoded no código.** Alíquota, redutor, ano de transição — tudo é dado, em `dados/`, nunca constante em `.py`.
 
 Se uma tarefa parecer exigir quebrar uma dessas regras, pare e pergunte antes de implementar.
@@ -44,15 +45,16 @@ Se uma tarefa parecer exigir quebrar uma dessas regras, pare e pergunte antes de
 ## 4. Onde cada coisa mora
 
 ```
+plano.md    → fonte normativa e plano do projeto. Vive na raiz.
 dados/      → CSV e JSON. Nenhum código aqui.
-nucleo/     → leitura de dados, montagem de cenário, montagem de memória de cálculo. Genérico, não específico de um regime.
-modulos/    → um arquivo por regime tributário (ex.: construcao_civil.py).
+nucleo/     → leitura de dados, cenários, memória de cálculo, relatório final. Genérico, não específico de um regime.
+modulos/    → um arquivo por regime tributário (ex.: construcao_civil.py, regime_atual.py).
 app/        → streamlit_app.py e telas.
-docs/       → legislacao.md + um .md por interpretação registrada.
+docs/       → um .md por interpretação registrada + PDFs das fontes oficiais.
 testes/     → testes automatizados + casos conferidos à mão.
 ```
 
-Detalhamento completo da árvore está em `reforma_tributaria_construcao_civil.md`, seção 8.2.
+Detalhamento completo da árvore está em `plano.md`, seção 8.2.
 
 ---
 
@@ -87,7 +89,7 @@ Detalhamento completo da árvore está em `reforma_tributaria_construcao_civil.m
 Ao gerar código neste repositório:
 
 1. Escreva em português (nomes de função, variável, coluna, chave de JSON, mensagens de erro).
-2. Não use `dataclass`, não crie classes de domínio, não proponha banco de dados nem JavaScript.
+2. Não use `dataclass`, não crie classes de domínio, não proponha banco de dados nem JavaScript (exceto JavaScript embutido no relatório HTML exportado, gerado por Python).
 3. Se o código precisar de um valor numérico tributário, crie ou aponte para um campo em `dados/` — nunca escreva o número direto no `.py`.
 4. Se encontrar um ponto de interpretação em aberto (marcado `[?]` ou `[I]` na documentação), não decida sozinho: sinalize e proponha entrada em `dados/interpretacoes.csv`.
 5. Mantenha funções curtas e sem estado. Prefira `dict`/`list`/`float`/`DataFrame` a qualquer abstração nova.

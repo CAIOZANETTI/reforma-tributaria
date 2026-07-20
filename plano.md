@@ -1,7 +1,7 @@
 # Reforma Tributária Brasileira aplicada à Formação de Preços em Construção Civil
 
-**Versão:** 0.2
-**Data de corte da pesquisa:** 18/07/2026
+**Versão:** 0.3
+**Data de corte da pesquisa:** 20/07/2026
 **Escopo:** IBS, CBS e Imposto Seletivo aplicados a *serviços de construção civil* (obra por empreitada), com foco em custo, BDI e preço de venda.
 **Regra do repositório:** nada entra aqui sem dispositivo legal citado. Estimativa é marcada como estimativa. Lacuna é marcada como lacuna. Interpretação é registrada, versionada e assinada.
 
@@ -203,6 +203,41 @@ O efeito sobre o preço final **não é determinável a priori**:
 
 > **O sistema calcula, não opina.** Nenhuma tela deve afirmar que "a reforma reduz o preço da obra".
 
+### 5.4 Regime da empresa e regime do fornecedor — duas dimensões obrigatórias
+
+**(a) O regime da própria empresa (quem orça e vende a obra).**
+
+O baseline "regime atual" do cenário Referência muda conforme o enquadramento:
+
+| Regime da empresa | PIS/Cofins hoje | Consequência no cálculo |
+|---|---|---|
+| Lucro real | 9,25% não cumulativo, com créditos | Baseline com créditos de PIS/Cofins `[S]` |
+| Lucro presumido | 3,65% cumulativo, sem créditos | Baseline sem créditos `[S]` |
+| Simples Nacional | dentro da guia única (Anexo IV) | IBS/CBS por dentro do Simples, sem repasse de crédito cheio ao cliente, **ou** opção do art. 41 da LC 214 pelo recolhimento "por fora" com transferência de crédito `[S] [I]` |
+
+Sem essa variável, o cenário **Referência** (item 8.5) e a comparação de carga pré × pós exigida pelo art. 374 não são calculáveis. O regime da empresa é **entrada obrigatória** do sistema. Dados em `dados/regimes_empresa.json`.
+
+**(b) O regime do fornecedor (de quem se compra).**
+
+O crédito de IBS/CBS não depende só da natureza do custo — depende de **quem fornece**:
+
+| Regime do fornecedor | Crédito para a compradora |
+|---|---|
+| Regime regular (presumido/real) | Cheio — alíquota sobre o valor da aquisição (art. 47) `[S]` |
+| Simples Nacional | Limitado ao montante cobrado dentro do Simples, salvo opção do fornecedor pelo recolhimento por fora (art. 41) `[S] [I]` |
+| MEI (SIMEI) | Em aberto `[?] [I]` |
+| CLT (folha própria) | Não gera crédito `[S]` |
+
+**(c) Categorias de custo.**
+
+O orçamento entra no sistema **agregado por categoria de custo × regime do fornecedor**, porque é esse par que determina imposto e crédito. O detalhe físico (quantidade, unidade, preço unitário) é irrelevante para a tributação e fica fora do sistema.
+
+Categorias mapeadas: mão de obra CLT, mão de obra PJ, mão de obra MEI, subempreitada, material de indústria, material *free issue*, locação de equipamento, transporte de carga, transporte de pessoas, alimentação, combustível. O de-para completo vive em `dados/categorias_custo.csv` (item 8.3).
+
+Quanto mais a cadeia usa CLT, MEI e Simples, menos crédito se acumula — esse efeito passa a ser calculável linha a linha, e é o foco central do sistema: **descobrir o imposto e o crédito por detrás de cada custo na formação do preço de venda.**
+
+Categorias com vedação potencial de crédito por "uso e consumo pessoal" (alimentação de canteiro, transporte de funcionários — art. 57 da LC 214/2025) são questão interpretativa registrada `[?] [I]`.
+
 ---
 
 ## 6. Contratos em curso
@@ -276,6 +311,12 @@ Cada linha tem um arquivo espelho em `docs/interpretacoes/INT-0007.md` com o rac
 | `Q-MOBILIZACAO-FATO-GERADOR` | LC 214/2025, art. 254 | Mobilização e canteiro: quando ocorre o fornecimento? |
 | `Q-CPRB-BDI` | fora da LC 214 | CPRB permanece no termo `I` do BDI? |
 | `Q-TRIBUTO-POR-FORA` | EC 132/2023 | Confirmação de que não integra a própria base |
+| `Q-REGIME-SIMPLES-OPCAO` | LC 214/2025, art. 41 | Construtora do Simples: compensa recolher IBS/CBS "por fora" para transferir crédito ao cliente? |
+| `Q-CREDITO-SIMPLES` | LC 214/2025, art. 41 | Aquisição de fornecedor do Simples: limite exato do crédito e efeito da opção por fora |
+| `Q-CREDITO-MEI` | LC 214/2025, art. 41 | Aquisição de MEI (SIMEI) gera algum crédito? |
+| `Q-CREDITO-ALIMENTACAO` | LC 214/2025, art. 57 | Alimentação de canteiro é "uso e consumo pessoal" (vedado) ou insumo da obra? |
+| `Q-CREDITO-TRANSPORTE-PESSOAS` | LC 214/2025, art. 57 | Transporte de funcionários é "uso e consumo pessoal" (vedado) ou insumo da obra? |
+| `Q-CREDITO-COMBUSTIVEL` | LC 214/2025 | Combustível em regime monofásico gera crédito na obra? |
 
 ---
 
@@ -293,27 +334,32 @@ Cada linha tem um arquivo espelho em `docs/interpretacoes/INT-0007.md` com o rac
 ### 8.2 Estrutura do repositório
 
 ```
-reforma-tributaria-obra/
-├── README.md
-├── CLAUDE.md                     # constituição do projeto
+reforma-tributaria/
+├── CLAUDE.md                     # constituição do projeto (padrão de código e dados)
 ├── CONTRIBUTING.md               # como propor interpretação e como versionar
 ├── CHANGELOG.md
+├── plano.md                      # ESTE documento — fonte normativa e plano
+├── .github/
+│   └── workflows/
+│       └── testes.yml            # CI: pytest + validação dos dados em todo PR
 ├── docs/
-│   ├── legislacao.md             # ESTE documento
 │   ├── interpretacoes/           # um .md por interpretação registrada
 │   └── fontes/                   # PDFs oficiais (LC 214, LC 227, Decreto 12.955)
 ├── dados/
 │   ├── cronograma.csv            # ano a ano, 2026 a 2033
 │   ├── parametros.json           # redutores, regimes, vigências
+│   ├── regimes_empresa.json      # enquadramento da empresa orçante (Simples, presumido, real)
+│   ├── categorias_custo.csv      # matriz categoria de custo × regime do fornecedor → crédito
 │   ├── interpretacoes.csv        # camada do item 7
-│   ├── perfis.json               # conjuntos coerentes de interpretações
-│   └── natureza_insumo.csv       # de-para insumo → direito a crédito
+│   └── perfis.json               # conjuntos coerentes de interpretações
 ├── nucleo/
 │   ├── leitura.py                # lê CSV/JSON, valida colunas obrigatórias
 │   ├── cenarios.py               # monta a linha do tempo 2026-2033
-│   └── memoria.py                # monta a memória de cálculo exportável
+│   ├── memoria.py                # monta a memória de cálculo exportável
+│   └── relatorio.py              # exporta relatório final: HTML autocontido e Excel
 ├── modulos/
 │   ├── construcao_civil.py       # regime específico, art. 252 V
+│   ├── regime_atual.py           # sistema vigente (PIS/Cofins/ISS/ICMS) — cenário Referência
 │   ├── locacao_imoveis.py        # art. 261 p.único   (futuro)
 │   ├── incorporacao.py           # arts. 257-262      (futuro)
 │   └── regime_regular.py         # regra geral        (futuro)
@@ -370,18 +416,71 @@ Célula vazia significa **não fixado em norma** — o app obriga o usuário a i
 }
 ```
 
-**`dados/natureza_insumo.csv`** — o de-para que decide crédito:
+**`dados/regimes_empresa.json`** — o enquadramento de quem orça (item 5.4a):
 
-```csv
-natureza;gera_credito;observacao;interpretacao_id
-material;sim;"art. 47";
-subempreitada;sim;"art. 47";
-locacao_equipamento;sim;"conferir";INT-0011
-mao_de_obra_propria;nao;"folha não gera crédito";
-material_free_issue;;"em aberto";INT-0007
+```json
+{
+  "versao": "0.1",
+  "data_atualizacao": "2026-07-20",
+  "regimes": {
+    "simples_nacional": {
+      "descricao": "Optante do Simples (Anexo IV construção civil)",
+      "pis_cofins_atual": null,
+      "credito_transferivel_ibs_cbs": null,
+      "observacao": "guia única; opção do art. 41 em aberto",
+      "interpretacao_id": "Q-REGIME-SIMPLES-OPCAO",
+      "confianca": "?"
+    },
+    "lucro_presumido": {
+      "descricao": "PIS/Cofins cumulativo",
+      "pis_cofins_atual": 0.0365,
+      "gera_credito_pis_cofins": false,
+      "fonte": "Leis 10.637/2002 e 10.833/2003",
+      "confianca": "S"
+    },
+    "lucro_real": {
+      "descricao": "PIS/Cofins não cumulativo",
+      "pis_cofins_atual": 0.0925,
+      "gera_credito_pis_cofins": true,
+      "fonte": "Leis 10.637/2002 e 10.833/2003",
+      "confianca": "S"
+    }
+  }
+}
 ```
 
-Coluna vazia em `gera_credito` = o app não decide sozinho, obriga escolha de interpretação.
+**`dados/categorias_custo.csv`** — a matriz que decide imposto e crédito, uma linha por **categoria × regime do fornecedor** (item 5.4c). É o coração do sistema:
+
+```csv
+categoria;regime_fornecedor;gera_credito;base_credito;observacao;fonte;interpretacao_id;confianca
+mao_obra_clt;;nao;;"folha própria não gera crédito";"LC 214/2025, art. 47 (a contrário)";;S
+mao_obra_pj;regime_regular;sim;cheia;"prestador PJ no regime regular";"LC 214/2025, art. 47";;S
+mao_obra_pj;simples_nacional;sim;limitada;"limitado ao cobrado no Simples";"LC 214/2025, art. 41";;I
+mao_obra_mei;mei;;;"crédito em aberto";"LC 214/2025, art. 41";;?
+subempreitada;regime_regular;sim;cheia;"";"LC 214/2025, arts. 47 e 261";;S
+subempreitada;simples_nacional;sim;limitada;"comum na cadeia — lacuna 8";"LC 214/2025, art. 41";;I
+material_industria;regime_regular;sim;cheia;"aço, concreto, industrializados";"LC 214/2025, art. 47";;S
+material_free_issue;;;;"fornecido pelo contratante";"LC 214/2025, art. 47";INT-0007;?
+locacao_equipamento;regime_regular;;;"em aberto — lacuna 7";"conferir";INT-0011;?
+transporte_carga;regime_regular;sim;cheia;"frete de insumo da obra";"LC 214/2025, art. 47";;S
+transporte_pessoas;regime_regular;;;"uso pessoal? art. 57";"LC 214/2025, art. 57";;?
+alimentacao;regime_regular;;;"uso pessoal? art. 57";"LC 214/2025, art. 57";;?
+combustivel;regime_regular;;;"regime monofásico";"LC 214/2025";;?
+```
+
+Célula vazia em `gera_credito` = o app não decide sozinho, obriga escolha de interpretação. A coluna `interpretacao_id` é preenchida quando a interpretação correspondente for registrada em `dados/interpretacoes.csv`.
+
+**Formato do orçamento de entrada** (upload na tela 4) — agregado, quatro colunas. O detalhe físico do orçamento (quantidade, unidade, preço unitário) fica fora do sistema; quem tem orçamento SINAPI/CPU detalhado agrupa os totais nestas categorias antes de subir:
+
+```csv
+categoria;regime_fornecedor;descricao;valor
+material_industria;regime_regular;"aço beneficiado, concreto";4200000,00
+mao_obra_clt;;"equipe própria de produção";2500000,00
+mao_obra_mei;mei;"pedreiros e eletricistas MEI";300000,00
+subempreitada;simples_nacional;"instalações elétricas";400000,00
+```
+
+Linha cujo par categoria × regime não exista em `categorias_custo.csv` é destacada para tratamento manual.
 
 ### 8.4 `modulos/construcao_civil.py` — esboço
 
@@ -454,6 +553,7 @@ Para um mesmo orçamento, `nucleo/cenarios.py` percorre `cronograma.csv` de 2026
 | `carga_efetiva` | soma dos tributos vigentes no ano (regime antigo + novo em convivência) |
 | `preco_de_venda` | resultado consolidado |
 | `margem` | preço menos custo, para verificar preservação de margem |
+| `decomposicao_por_categoria` | custo bruto, crédito e custo líquido de **cada categoria de custo**, ano a ano — a resposta a "de onde vem meu crédito" |
 | `confianca_do_ano` | o menor selo entre os parâmetros usados naquele ano |
 
 O `confianca_do_ano` é o detalhe que importa: 2026 sai como `[L]`, 2027 e 2028 saem como `[E]`, 2029 a 2032 saem como `[?]`. A tela precisa mostrar isso visualmente — a projeção fica progressivamente menos confiável, e o usuário tem que enxergar isso.
@@ -470,12 +570,12 @@ Três cenários de comparação, montados a partir da mesma trajetória:
 |---|---|---|
 | 1 | **Parâmetros** | Mostra `cronograma.csv` e `parametros.json` com o selo de confiança visível em cada célula. Editável para simulação; a edição não altera o arquivo, entra na memória como premissa do usuário. |
 | 2 | **Perfil interpretativo** | Escolha entre `conservador`, `agressivo` ou `personalizado`. No personalizado, cada questão aberta aparece com as interpretações concorrentes lado a lado e o usuário escolhe uma. Nada é escolhido por omissão. |
-| 3 | **Enquadramento do contrato** | Questionário curto (tem serviço conjunto? material faturado à parte? contratante é administração pública?) que devolve regime, redutor e artigo aplicável. Se cair em zona cinzenta do §14, sinaliza e remete à tela 2. |
-| 4 | **Orçamento** | Upload de CSV de insumos. Classificação por natureza via `natureza_insumo.csv`, com as linhas não classificadas destacadas para tratamento manual. |
+| 3 | **Enquadramento** | Questionário curto em duas partes. Da empresa: regime tributário (Simples, presumido, real)? Do contrato: tem serviço conjunto? material faturado à parte? contratante é administração pública? Devolve regime, redutor e artigo aplicável. Se cair em zona cinzenta do §14, sinaliza e remete à tela 2. |
+| 4 | **Orçamento** | Upload do CSV agregado (categoria; regime_fornecedor; descricao; valor). Validação contra `categorias_custo.csv`, com pares não mapeados destacados para tratamento manual. |
 | 5 | **Linha do tempo 2026–2033** | Gráfico Plotly de barras empilhadas: custo líquido, BDI e tributo, ano a ano. Faixa de incerteza sombreada a partir de 2027. É a tela que responde "o que acontece com o meu preço até 2033". |
 | 6 | **Comparador** | Waterfall Plotly: custo direto bruto → crédito → custo líquido → BDI → tributo → preço. Duas colunas, regime atual x ano escolhido. |
 | 7 | **Sensibilidade** | Heatmap: preço de venda em função da alíquota de referência (eixo x) e do percentual de material do contrato (eixo y). |
-| 8 | **Memória de cálculo** | Exporta CSV + JSON com todas as premissas, dispositivos citados, interpretações aplicadas (id, autor, data) e versão dos arquivos de dados. É este artefato que instrui pedido de reequilíbrio sob o art. 374. |
+| 8 | **Memória de cálculo e relatório final** | Exporta CSV + JSON com todas as premissas, dispositivos citados, interpretações aplicadas (id, autor, data) e versão dos arquivos de dados. É este artefato que instrui pedido de reequilíbrio sob o art. 374. Além disso, gera os entregáveis ao usuário final: **relatório HTML autocontido** (gráficos Plotly embutidos, abre offline em qualquer navegador) e **Excel** (abas: premissas, orçamento, trajetória, memória — via pandas). JavaScript aparece **apenas embutido nessa saída**, conforme exceção registrada no `CLAUDE.md`. |
 
 ### 8.7 Versionamento e colaboração
 
@@ -494,6 +594,7 @@ Toda memória de cálculo grava os três: versão do código, versão dos dados,
 **Regras de contribuição (`CONTRIBUTING.md`):**
 
 - `main` protegida, PR obrigatório, sem push direto.
+- CI obrigatório em todo PR (`.github/workflows/testes.yml`): pytest + validação dos dados (colunas obrigatórias, separador `;`, `interpretacoes.csv` append-only).
 - Mudança de **número** exige o dispositivo na descrição do PR. Sem artigo citado, não entra.
 - Mudança de **interpretação** exige: linha nova no CSV + arquivo em `docs/interpretacoes/` + justificativa. Não se altera interpretação existente, se adiciona concorrente.
 - Mudança de **código** exige teste com resultado conferido à mão em `testes/casos/`.
@@ -505,14 +606,15 @@ Toda memória de cálculo grava os três: versão do código, versão dos dados,
 
 ## 9. Ordem de construção
 
-1. `dados/cronograma.csv` e `dados/parametros.json` + `nucleo/leitura.py` + testes. Tudo depende disso.
-2. `dados/interpretacoes.csv` com as seis questões do item 7.4 e o perfil `conservador`.
-3. `modulos/construcao_civil.py` completo, com testes de mesa.
-4. `nucleo/cenarios.py` — a trajetória 2026–2033.
-5. Telas 1, 3 e 5 do Streamlit (é o conjunto mínimo que demonstra valor).
-6. `nucleo/memoria.py` e tela 8 — o artefato do art. 374.
-7. Telas 2, 4, 6 e 7.
-8. Segundo módulo de negócio (`locacao_imoveis.py`), para validar que a estrutura de arquivo único por regime se sustenta.
+1. Esqueleto do repositório (pastas, `CONTRIBUTING.md`, `CHANGELOG.md`, `requirements.txt`) + CI (`.github/workflows/testes.yml`).
+2. `dados/cronograma.csv`, `dados/parametros.json` e `dados/regimes_empresa.json` + `nucleo/leitura.py` + testes. Tudo depende disso.
+3. `dados/interpretacoes.csv` com as questões do item 7.4, `dados/categorias_custo.csv` e o perfil `conservador`.
+4. `modulos/construcao_civil.py` e `modulos/regime_atual.py` completos, com testes de mesa.
+5. `nucleo/cenarios.py` — a trajetória 2026–2033, com decomposição por categoria de custo.
+6. Telas 1, 3 e 5 do Streamlit (é o conjunto mínimo que demonstra valor).
+7. `nucleo/memoria.py`, `nucleo/relatorio.py` (HTML autocontido + Excel) e tela 8 — o artefato do art. 374 e o entregável ao usuário final.
+8. Telas 2, 4, 6 e 7.
+9. Segundo módulo de negócio (`locacao_imoveis.py`), para validar que a estrutura de arquivo único por regime se sustenta.
 
 ---
 
@@ -531,6 +633,10 @@ Toda memória de cálculo grava os três: versão do código, versão dos dados,
 | 9 | Split payment — manual e Swagger publicados pela Fazenda em jun/2026 | Fluxo de caixa da obra |
 | 10 | Efeito dos 13 vetos da LC 227/2026 se derrubados | Pode alterar dispositivos já modelados |
 | 11 | Texto integral do art. 360, §§13 e 14 do Decreto 12.955/2026 no DOU | Base do enquadramento — hoje `[S]` |
+| 12 | Crédito nas aquisições de MEI (art. 41) | MEI é comum na cadeia de obra; define linha da matriz de categorias |
+| 13 | Vedação de crédito por "uso e consumo pessoal" (art. 57): alimentação e transporte de pessoal de canteiro | Categorias inteiras da matriz dependem disso |
+| 14 | Crédito de combustível (regime monofásico) | Peso relevante em obra pesada e frota |
+| 15 | Opção do art. 41 para a empresa do Simples: prazo, forma e efeito no repasse de crédito | Decide competitividade de construtora do Simples e de subempreiteiro |
 
 ---
 
@@ -559,4 +665,5 @@ Toda memória de cálculo grava os três: versão do código, versão dos dados,
 |---|---|---|
 | 0.1 | 18/07/2026 | Base normativa inicial; enquadramento de construção civil |
 | 0.2 | 18/07/2026 | Remoção da modelagem em grafo. Dados em CSV/JSON, sem banco. Código em português, minimalista, um arquivo por regime. Nova camada de interpretações (item 7). Cronograma expandido para 2029–2032. Módulo de cenários e telas com linha do tempo. Regras de versionamento e colaboração |
+| 0.3 | 20/07/2026 | Documento renomeado para `plano.md`. Regime da empresa orçante (Simples/presumido/real) como entrada obrigatória (item 5.4a). Crédito por regime do fornecedor: regular, Simples, MEI, CLT (item 5.4b). Orçamento agregado por categoria de custo; `categorias_custo.csv` substitui `natureza_insumo.csv` (item 5.4c). Seis novas questões interpretativas (arts. 41 e 57, monofásico). Relatório final em HTML autocontido e Excel (exceção registrada no `CLAUDE.md`). `modulos/regime_atual.py` para o cenário Referência. CI com pytest e validação de dados |
 | — | pós-out/2026 | **Obrigatória:** inserir alíquota de referência oficial da CBS 2027 |
