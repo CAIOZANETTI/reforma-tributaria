@@ -2,7 +2,7 @@
 
 Este arquivo define o padrão obrigatório de código e dados deste repositório. Vale para qualquer pessoa que contribua e para qualquer IA (Claude Code ou outra) que gere código aqui.
 
-A fonte normativa (legislação, arquitetura, backlog de pesquisa) é `reforma_tributaria_construcao_civil.md` (futuramente `docs/legislacao.md`). Este arquivo aqui **não repete** aquele conteúdo — só fixa o padrão técnico que todo código e todo dado precisam seguir.
+A fonte normativa (legislação, arquitetura, backlog de pesquisa) é `plano.md`, na raiz do repositório. Este arquivo aqui **não repete** aquele conteúdo — só fixa o padrão técnico que todo código e todo dado precisam seguir.
 
 ---
 
@@ -45,15 +45,16 @@ Se uma tarefa parecer exigir quebrar uma dessas regras, pare e pergunte antes de
 ## 4. Onde cada coisa mora
 
 ```
+plano.md    → fonte normativa e plano do projeto. Vive na raiz.
 dados/      → CSV e JSON. Nenhum código aqui.
-nucleo/     → leitura de dados, montagem de cenário, montagem de memória de cálculo. Genérico, não específico de um regime.
-modulos/    → um arquivo por regime tributário (ex.: construcao_civil.py).
+nucleo/     → leitura de dados, cenários, memória de cálculo, relatório final. Genérico, não específico de um regime.
+modulos/    → um arquivo por regime tributário (ex.: construcao_civil.py, regime_atual.py).
 app/        → streamlit_app.py e telas.
-docs/       → legislacao.md + um .md por interpretação registrada.
+docs/       → um .md por interpretação registrada + PDFs das fontes oficiais.
 testes/     → testes automatizados + casos conferidos à mão.
 ```
 
-Detalhamento completo da árvore está em `reforma_tributaria_construcao_civil.md`, seção 8.2.
+Detalhamento completo da árvore está em `plano.md`, seção 8.2.
 
 ---
 
