@@ -1,0 +1,14 @@
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Ambientes virtuais
+.venv/
+venv/
+
+# Streamlit
+.streamlit/secrets.toml
+
+# Saídas geradas pelo sistema (relatórios exportados não são versionados)
+saidas/
