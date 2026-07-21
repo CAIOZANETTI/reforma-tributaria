@@ -1,0 +1,4 @@
+caso;funcao;entradas;resultado_esperado;conferido_por;data
+CASO-CE-001;custo_liquido_2026;"perfil=conservador|cbs_referencia=0,088|ibs_referencia=0,177|aliquota_credito_simples=0,005";10474500,0;"conferência manual: bruto 10.530.000; créditos 2026 (alíquota 0,01): cheia 4.450.000×0,01=44.500 + reduzida 1.800.000×0,01×0,5=9.000 + limitada 400.000×0,005=2.000 = 55.500";2026-07-21
+CASO-CE-002;custo_liquido_2033;"perfil=conservador|cbs_referencia=0,088|ibs_referencia=0,177|aliquota_credito_simples=0,005";9110250,0;"conferência manual: alíquota 0,265: cheia 4.450.000×0,265=1.179.250 + reduzida 1.800.000×0,1325=238.500 + limitada 2.000 = 1.419.750; 10.530.000−1.419.750";2026-07-21
+CASO-CE-003;credito_2033;"perfil=conservador|cbs_referencia=0,088|ibs_referencia=0,177|aliquota_credito_simples=0,005";1419750,0;"conferência manual: soma dos três blocos acima";2026-07-21

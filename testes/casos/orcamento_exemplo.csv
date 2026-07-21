@@ -1,0 +1,9 @@
+categoria;regime_fornecedor;descricao;valor
+material_industria;regime_regular;"aço beneficiado, concreto, insumos industrializados";4200000,00
+mao_obra_clt;;"equipe própria de produção";2500000,00
+mao_obra_mei;mei;"pedreiros e eletricistas MEI";300000,00
+subempreitada;regime_regular;"fundações e terraplenagem";1800000,00
+subempreitada;simples_nacional;"instalações elétricas";400000,00
+locacao_equipamento;regime_regular;"grua, escavadeira, fôrmas";900000,00
+transporte_carga;regime_regular;"fretes de material";250000,00
+alimentacao;regime_regular;"refeitório de canteiro";180000,00
