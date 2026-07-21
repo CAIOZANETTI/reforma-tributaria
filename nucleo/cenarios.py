@@ -83,6 +83,19 @@ def resolver_credito(linha_orcamento, indice_matriz, indice_interpretacoes, esco
     }
 
 
+def pares_nao_mapeados(orcamento, matriz):
+    """Linhas do orçamento cujo par categoria × regime não existe na matriz.
+
+    Versão não-bloqueante para a tela de upload: devolve as linhas para
+    destaque e tratamento manual, em vez de interromper.
+    """
+    indice_matriz = _indexar_matriz(matriz)
+    return [
+        linha for linha in leitura.linhas(orcamento)
+        if (linha["categoria"], linha["regime_fornecedor"]) not in indice_matriz
+    ]
+
+
 def resolver_orcamento(orcamento, matriz, interpretacoes, escolhas):
     """Resolve todas as linhas do orçamento contra a matriz e o perfil."""
     indice_matriz = _indexar_matriz(matriz)

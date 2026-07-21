@@ -52,19 +52,33 @@ def _vazio_vira_none(tabela):
     return tabela
 
 
-def linhas(tabela):
-    """Devolve a tabela como lista de dicts nativos, preservando None.
+def _lacuna_vira_none(valor):
+    if valor is None:
+        return None
+    try:
+        if pd.isna(valor):
+            return None
+    except (TypeError, ValueError):  # listas e outros não-escalares passam direto
+        pass
+    return valor
 
-    Use isto para iterar — o iterrows() do pandas converte None em NaN
-    ao montar a linha, o que quebraria a regra "lacuna é None".
+
+def linhas(tabela):
+    """Devolve a tabela como lista de dicts nativos, com lacuna sempre None.
+
+    Use isto para iterar qualquer tabela — o iterrows() do pandas converte
+    None em NaN ao montar a linha, e DataFrames criados em memória guardam
+    NaN onde se escreveu None. Aqui a regra "lacuna é None" vale sempre.
     """
     return [
-        dict(zip(tabela.columns, valores))
+        {coluna: _lacuna_vira_none(valor) for coluna, valor in zip(tabela.columns, valores)}
         for valores in tabela.itertuples(index=False, name=None)
     ]
 
 
 def _ler_csv(caminho):
+    if hasattr(caminho, "read"):  # upload do Streamlit ou buffer em memória
+        return pd.read_csv(caminho, sep=";", decimal=",", quotechar='"')
     caminho = Path(caminho)
     if not caminho.is_file():
         raise FileNotFoundError(f"Arquivo de dados não encontrado: {caminho}")
@@ -146,7 +160,8 @@ def ler_perfis(caminho=None):
 def ler_orcamento(caminho):
     """Lê o CSV agregado do usuário: categoria; regime_fornecedor; descricao; valor."""
     tabela = _ler_csv(caminho)
-    _validar_colunas(tabela, COLUNAS_ORCAMENTO, Path(caminho).name)
+    nome = getattr(caminho, "name", None) or Path(str(caminho)).name
+    _validar_colunas(tabela, COLUNAS_ORCAMENTO, nome)
     tabela = _vazio_vira_none(tabela)
     sem_valor = tabela[tabela["valor"].isna()] if hasattr(tabela["valor"], "isna") else tabela[
         [v is None for v in tabela["valor"]]
