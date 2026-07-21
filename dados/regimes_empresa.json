@@ -1,0 +1,31 @@
+{
+  "versao": "0.1",
+  "data_atualizacao": "2026-07-21",
+  "observacao": "Regime tributário da EMPRESA ORÇANTE (quem vende a obra). O regime do FORNECEDOR vive em categorias_custo.csv.",
+  "regimes": {
+    "simples_nacional": {
+      "descricao": "Optante do Simples Nacional (Anexo IV, construção civil)",
+      "pis_cofins_atual": null,
+      "gera_credito_pis_cofins": false,
+      "credito_transferivel_ibs_cbs": null,
+      "observacao": "tributos dentro da guia única; opção do art. 41 da LC 214/2025 pelo recolhimento por fora é questão interpretativa",
+      "questao_id": "Q-REGIME-SIMPLES-OPCAO",
+      "fonte": "LC 123/2006; LC 214/2025, art. 41",
+      "confianca": "?"
+    },
+    "lucro_presumido": {
+      "descricao": "PIS/Cofins cumulativo",
+      "pis_cofins_atual": 0.0365,
+      "gera_credito_pis_cofins": false,
+      "fonte": "Leis 10.637/2002 e 10.833/2003, regime cumulativo",
+      "confianca": "S"
+    },
+    "lucro_real": {
+      "descricao": "PIS/Cofins não cumulativo",
+      "pis_cofins_atual": 0.0925,
+      "gera_credito_pis_cofins": true,
+      "fonte": "Leis 10.637/2002 e 10.833/2003, regime não cumulativo",
+      "confianca": "S"
+    }
+  }
+}
