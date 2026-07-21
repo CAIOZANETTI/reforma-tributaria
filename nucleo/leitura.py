@@ -40,9 +40,28 @@ def _validar_colunas(tabela, colunas_obrigatorias, nome_arquivo):
 
 
 def _vazio_vira_none(tabela):
-    """Converte NaN/célula vazia em None — lacuna nunca vira número."""
+    """Converte NaN/célula vazia em None — lacuna nunca vira número.
+
+    Conversão explícita por coluna: o `DataFrame.where(cond, None)` do pandas
+    trata None como "sem preenchimento" em alguns caminhos e deixa NaN passar.
+    """
     tabela = tabela.astype(object)
-    return tabela.where(pd.notna(tabela), None)
+    for coluna in tabela.columns:
+        valores = [None if pd.isna(valor) else valor for valor in tabela[coluna]]
+        tabela[coluna] = pd.Series(valores, dtype=object, index=tabela.index)
+    return tabela
+
+
+def linhas(tabela):
+    """Devolve a tabela como lista de dicts nativos, preservando None.
+
+    Use isto para iterar — o iterrows() do pandas converte None em NaN
+    ao montar a linha, o que quebraria a regra "lacuna é None".
+    """
+    return [
+        dict(zip(tabela.columns, valores))
+        for valores in tabela.itertuples(index=False, name=None)
+    ]
 
 
 def _ler_csv(caminho):

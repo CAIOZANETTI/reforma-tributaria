@@ -1,0 +1,42 @@
+{
+  "versao": "0.1",
+  "data_atualizacao": "2026-07-21",
+  "perfis": {
+    "conservador": {
+      "descricao": "Sempre a leitura de menor risco fiscal: crédito só quando incontroverso, carga cheia quando houver dúvida.",
+      "escolhas": {
+        "Q-SEGREGACAO-MATERIAL": "INT-0001",
+        "Q-TRIBUTO-POR-FORA": "INT-0003",
+        "Q-CPRB-BDI": "INT-0004",
+        "Q-MOBILIZACAO-FATO-GERADOR": "INT-0006",
+        "Q-CREDITO-FREE-ISSUE": "INT-0007",
+        "Q-ESTATAIS-REEQUILIBRIO": "INT-0009",
+        "Q-CREDITO-LOCACAO-EQUIPAMENTO": "INT-0011",
+        "Q-REGIME-SIMPLES-OPCAO": "INT-0013",
+        "Q-CREDITO-SIMPLES": "INT-0015",
+        "Q-CREDITO-MEI": "INT-0017",
+        "Q-CREDITO-ALIMENTACAO": "INT-0019",
+        "Q-CREDITO-TRANSPORTE-PESSOAS": "INT-0021",
+        "Q-CREDITO-COMBUSTIVEL": "INT-0023"
+      }
+    },
+    "agressivo": {
+      "descricao": "A leitura mais favorável ao contribuinte em cada questão aberta. Uso por conta e risco de quem assina o cálculo.",
+      "escolhas": {
+        "Q-SEGREGACAO-MATERIAL": "INT-0002",
+        "Q-TRIBUTO-POR-FORA": "INT-0003",
+        "Q-CPRB-BDI": "INT-0005",
+        "Q-MOBILIZACAO-FATO-GERADOR": "INT-0006",
+        "Q-CREDITO-FREE-ISSUE": "INT-0008",
+        "Q-ESTATAIS-REEQUILIBRIO": "INT-0010",
+        "Q-CREDITO-LOCACAO-EQUIPAMENTO": "INT-0012",
+        "Q-REGIME-SIMPLES-OPCAO": "INT-0014",
+        "Q-CREDITO-SIMPLES": "INT-0016",
+        "Q-CREDITO-MEI": "INT-0018",
+        "Q-CREDITO-ALIMENTACAO": "INT-0020",
+        "Q-CREDITO-TRANSPORTE-PESSOAS": "INT-0022",
+        "Q-CREDITO-COMBUSTIVEL": "INT-0024"
+      }
+    }
+  }
+}

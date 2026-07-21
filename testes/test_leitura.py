@@ -33,7 +33,7 @@ def test_valores_fixados_carregam_com_virgula_decimal():
 
 def test_toda_linha_tem_selo_e_fonte():
     cronograma = leitura.ler_cronograma()
-    for _, linha in cronograma.iterrows():
+    for linha in leitura.linhas(cronograma):
         assert linha["confianca"] in leitura.SELOS_VALIDOS
         assert linha["fonte"], f"ano {linha['ano']} sem fonte"
 
