@@ -1,0 +1,8 @@
+caso;funcao;entradas;resultado_esperado;conferido_por;data
+CASO-CC-001;aliquota_efetiva;"aliquota_referencia=0,265|redutor=0,50";0,1325;"conferência manual: 0,265 × 0,50 = 0,1325";2026-07-21
+CASO-CC-002;aliquota_efetiva;"aliquota_referencia=0,28|redutor=0,50";0,14;"conferência manual: 0,28 × 0,50 = 0,14";2026-07-21
+CASO-CC-003;credito_do_insumo;"valor=1000|aliquota_entrada=0,265|gera_credito=sim";265,0;"conferência manual: 1000 × 0,265 = 265";2026-07-21
+CASO-CC-004;credito_do_insumo;"valor=1000|aliquota_entrada=0,265|gera_credito=nao";0,0;"conferência manual: sem direito, crédito zero";2026-07-21
+CASO-CC-005;bdi_reforma;"administracao_central=0,05|seguro=0,01|risco=0,02|garantia=0,01|despesa_financeira=0,015|lucro=0,08";0,194858;"conferência manual: 1,09 × 1,015 × 1,08 − 1 = 0,194858";2026-07-21
+CASO-CC-006;preco_de_venda_preco_liquido;"custo_liquido_total=1000|bdi=0,194858|aliquota_efetiva_obra=0,1325";1194,858;"conferência manual: 1000 × 1,194858";2026-07-21
+CASO-CC-007;preco_de_venda_preco_com_tributo;"custo_liquido_total=1000|bdi=0,194858|aliquota_efetiva_obra=0,1325";1353,176685;"conferência manual: 1194,858 × 1,1325 = 1353,176685";2026-07-21
