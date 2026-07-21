@@ -81,6 +81,7 @@ Detalhamento completo da árvore está em `plano.md`, seção 8.2.
 - Mudou uma **interpretação**? Precisa de: linha nova em `dados/interpretacoes.csv` + arquivo espelho em `docs/interpretacoes/` + justificativa no PR. Não se edita interpretação existente — cria-se uma concorrente.
 - Mudou **código**? Precisa de teste com resultado conferido à mão em `testes/casos/`.
 - Discordância técnica entre colaboradores não bloqueia merge — as duas leituras coexistem no CSV e o usuário do sistema escolhe qual aplicar. Só bloqueia merge o que estiver **sem fonte**.
+- Trabalho feito **com IA**? O corpo do PR precisa registrar, numa seção "Registro de uso de IA": qual agente/ferramenta (ex.: Claude Code, Copilot, Cursor), qual modelo, o **tempo aproximado** da interação e o **consumo** (tokens ou custo) quando a plataforma informar — se a plataforma não expõe o número, registrar "não disponível", nunca inventar. O histórico do repositório guarda não só o que cada pessoa mudou, mas com qual inteligência, por quanto tempo e a que custo.
 
 ---
 
@@ -94,3 +95,4 @@ Ao gerar código neste repositório:
 4. Se encontrar um ponto de interpretação em aberto (marcado `[?]` ou `[I]` na documentação), não decida sozinho: sinalize e proponha entrada em `dados/interpretacoes.csv`.
 5. Mantenha funções curtas e sem estado. Prefira `dict`/`list`/`float`/`DataFrame` a qualquer abstração nova.
 6. Antes de adicionar biblioteca nova, verifique se resolve com Python padrão, pandas ou Streamlit — que já são a stack do projeto.
+7. Ao abrir ou atualizar um PR, inclua a seção "Registro de uso de IA" exigida na seção 7: agente/ferramenta, modelo, tempo aproximado da interação e consumo quando disponível.
