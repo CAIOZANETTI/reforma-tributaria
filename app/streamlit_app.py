@@ -16,7 +16,7 @@ RAIZ = Path(__file__).resolve().parent.parent
 if str(RAIZ) not in sys.path:
     sys.path.insert(0, str(RAIZ))
 
-from nucleo import cenarios, leitura  # noqa: E402
+from nucleo import cenarios, leitura, memoria, relatorio  # noqa: E402
 from modulos import construcao_civil  # noqa: E402
 
 ROTULOS_SELO = {
@@ -233,6 +233,59 @@ def tela_linha_do_tempo(dados, entrada, premissas, perfil, escolhas):
         st.caption("Interpretações aplicadas: " + ", ".join(f"`{id_}`" for id_ in aplicadas))
 
 
+def tela_memoria(dados, entrada, premissas, perfil, escolhas):
+    st.header("8 · Memória de cálculo e relatório final")
+    orcamento, nome_orcamento = orcamento_em_uso()
+    st.caption(f"Orçamento em uso: {nome_orcamento} · perfil interpretativo: {perfil or '—'}")
+
+    if escolhas is None:
+        st.warning("Escolha um **perfil interpretativo** na barra lateral para gerar a memória.")
+        return
+
+    try:
+        resultado = cenarios.trajetoria(
+            orcamento, dados["cronograma"], dados["parametros"], dados["regimes"],
+            dados["matriz"], dados["interpretacoes"], escolhas, premissas, entrada,
+        )
+    except ValueError as erro:
+        st.error(str(erro))
+        return
+
+    consolidada = memoria.montar_memoria(
+        resultado, orcamento, premissas, entrada, perfil, escolhas,
+        dados["parametros"], dados["interpretacoes"],
+    )
+    st.markdown(
+        "Todas as premissas, dispositivos, interpretações (id, autor, data) e "
+        "versões dos dados — o artefato que instrui pedido de reequilíbrio "
+        "sob os arts. 373–377 da LC 214/2025."
+    )
+    st.dataframe(memoria.memoria_como_tabela(consolidada), hide_index=True)
+
+    coluna_1, coluna_2, coluna_3, coluna_4 = st.columns(4)
+    coluna_1.download_button(
+        "Baixar CSV", memoria.exportar_csv(consolidada),
+        file_name="memoria_calculo.csv", mime="text/csv",
+    )
+    coluna_2.download_button(
+        "Baixar JSON", memoria.exportar_json(consolidada),
+        file_name="memoria_calculo.json", mime="application/json",
+    )
+    coluna_3.download_button(
+        "Baixar relatório HTML", relatorio.gerar_html(consolidada),
+        file_name="relatorio_reforma_tributaria.html", mime="text/html",
+    )
+    coluna_4.download_button(
+        "Baixar Excel", relatorio.gerar_excel(consolidada),
+        file_name="relatorio_reforma_tributaria.xlsx",
+        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    )
+    st.caption(
+        "O HTML é autocontido (gráficos embutidos, abre sem internet). "
+        "JavaScript aparece apenas como saída gerada — exceção registrada no CLAUDE.md."
+    )
+
+
 def principal():
     st.set_page_config(page_title="Reforma Tributária · Construção Civil", layout="wide")
     st.title("Reforma tributária aplicada à formação de preço — construção civil")
@@ -244,7 +297,8 @@ def principal():
 
     tela = st.sidebar.radio(
         "Tela",
-        ["1 · Parâmetros", "3 · Enquadramento", "5 · Linha do tempo"],
+        ["1 · Parâmetros", "3 · Enquadramento", "5 · Linha do tempo",
+         "8 · Memória e relatório"],
     )
     perfil, escolhas = escolhas_do_perfil(dados)
     entrada = entrada_da_sidebar(dados)
@@ -254,8 +308,10 @@ def principal():
         tela_parametros(dados)
     elif tela.startswith("3"):
         tela_enquadramento(dados, entrada)
-    else:
+    elif tela.startswith("5"):
         tela_linha_do_tempo(dados, entrada, premissas, perfil, escolhas)
+    else:
+        tela_memoria(dados, entrada, premissas, perfil, escolhas)
 
 
 principal()

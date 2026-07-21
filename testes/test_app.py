@@ -86,3 +86,18 @@ def test_tela_linha_do_tempo_perfil_agressivo_tambem_calcula():
     app.run()
     assert not app.exception
     assert len(app.get("plotly_chart")) == 1
+
+
+def test_tela_memoria_sem_perfil_bloqueia():
+    app = ir_para(iniciar(), "8 · Memória e relatório")
+    avisos = " ".join(bloco.value for bloco in app.warning)
+    assert "perfil interpretativo" in avisos.lower()
+
+
+def test_tela_memoria_com_perfil_oferece_os_quatro_downloads():
+    app = ir_para(iniciar(), "8 · Memória e relatório")
+    app.sidebar.selectbox[0].set_value("conservador")
+    app.run()
+    assert not app.exception
+    botoes = app.get("download_button")
+    assert len(botoes) == 4, "CSV, JSON, HTML e Excel devem estar disponíveis"
