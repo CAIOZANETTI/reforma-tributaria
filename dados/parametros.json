@@ -1,0 +1,21 @@
+{
+  "versao": "0.3",
+  "data_atualizacao": "2026-07-21",
+  "redutores": {
+    "construcao_civil": {
+      "valor": 0.50,
+      "fonte": "LC 214/2025, art. 261, caput",
+      "confianca": "L"
+    },
+    "locacao_imoveis": {
+      "valor": 0.70,
+      "fonte": "LC 214/2025, art. 261, parágrafo único",
+      "confianca": "L"
+    }
+  },
+  "enquadramento_construcao_civil": {
+    "definicao": "Decreto 12.955/2026, art. 360, §13; Res. CGIBS 6/2026",
+    "exclusao": "fornecimento de material sem serviço conjunto (§14)",
+    "confianca": "S"
+  }
+}

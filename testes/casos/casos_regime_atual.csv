@@ -1,0 +1,5 @@
+caso;funcao;entradas;resultado_esperado;conferido_por;data
+CASO-RA-001;termo_i;"pis_cofins=0,0365|iss=0,05|cprb=0,0";0,0865;"conferência manual: 0,0365 + 0,05 = 0,0865 (presumido, ISS 5%)";2026-07-21
+CASO-RA-002;termo_i;"pis_cofins=0,0925|iss=0,02|cprb=0,045";0,1575;"conferência manual: 0,0925 + 0,02 + 0,045 = 0,1575 (real, ISS 2%, CPRB 4,5%)";2026-07-21
+CASO-RA-003;bdi_atual;"administracao_central=0,05|seguro=0,01|risco=0,02|garantia=0,01|despesa_financeira=0,015|lucro=0,08|termo_i_faturamento=0,0865";0,308;"conferência manual: 1,194858 ÷ 0,9135 − 1 = 0,308000 (0,9135 × 1,308 = 1,194858)";2026-07-21
+CASO-RA-004;preco_de_venda_atual_preco;"custo_direto=1000|bdi=0,308";1308,0;"conferência manual: 1000 × 1,308 = 1308";2026-07-21

@@ -1,0 +1,14 @@
+categoria;regime_fornecedor;gera_credito;base_credito;observacao;fonte;interpretacao_id;confianca
+mao_obra_clt;;nao;;"folha própria não gera crédito de IBS/CBS";"LC 214/2025, art. 47 (a contrário)";;S
+mao_obra_pj;regime_regular;sim;cheia;"prestador PJ no regime regular";"LC 214/2025, art. 47";;S
+mao_obra_pj;simples_nacional;sim;limitada;"crédito limitado ao cobrado no Simples";"LC 214/2025, art. 41";INT-0015;I
+mao_obra_mei;mei;;;"crédito de aquisição de MEI em aberto";"LC 214/2025, art. 41";INT-0017;?
+subempreitada;regime_regular;sim;reduzida;"serviço de construção: entrada com redução de 50% (art. 261)";"LC 214/2025, arts. 47 e 261";;S
+subempreitada;simples_nacional;sim;limitada;"comum na cadeia — lacuna 8 do plano";"LC 214/2025, art. 41";INT-0015;I
+material_industria;regime_regular;sim;cheia;"aço, concreto, insumos industrializados";"LC 214/2025, art. 47";;S
+material_free_issue;;;;"material fornecido pelo contratante";"LC 214/2025, art. 47";INT-0007;?
+locacao_equipamento;regime_regular;;;"em aberto — lacuna 7 do plano";"conferir";INT-0011;?
+transporte_carga;regime_regular;sim;cheia;"frete de insumo vinculado à obra";"LC 214/2025, art. 47";;S
+transporte_pessoas;regime_regular;;;"uso e consumo pessoal? art. 57";"LC 214/2025, art. 57";INT-0021;?
+alimentacao;regime_regular;;;"uso e consumo pessoal? art. 57";"LC 214/2025, art. 57";INT-0019;?
+combustivel;regime_regular;;;"regime monofásico — conferir";"LC 214/2025";INT-0023;?
